@@ -112,7 +112,7 @@ function movimentacao(dt)
       pode=true
       
     end
-    if love.keyboard.isDown(';') and love.keyboard.isDown('right') and pode then
+    if love.keyboard.isDown(';') and love.keyboard.isDown('right') and pode  then
 		posX=posX+dt
 		cobreimagem=false
 		verificar=true
