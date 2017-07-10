@@ -6,14 +6,16 @@ alturaTela = love.graphics.getHeight()
 local imagem,animation
 local imagem2,animation2
 local imagem3,animation3
-
+local posY=395
 local posX=100
 local direcao=true
 local cobreimagem=true
-
+local pode=false
 local verificar=false
 
 function love.load()
+  --background
+  imagem0=love.graphics.newImage("imagem/teladefundo.png")
    -- personagem 
    imagem = love.graphics.newImage( "Imagem/personagem.png" )
     local g = anim.newGrid (74,101, imagem:getWidth(),imagem:getHeight())
@@ -29,30 +31,55 @@ function love.load()
    delayInimigo=2
    tempocriarInimigo=delayInimigo
    inimigos={}
+   
+   delayfuradeira=1
+  tempodefuradeira=delayfuradeira
+  -- passarinho animacao
+  personagem ={
+  posX=posX,
+  posY=posY,
+  largura=74,
+  altura=101,
+  velY=0
+  }
+  
+  
+  alturaPulo=300
+  gravidade=400
+  
 end
 
 function love.update(dt)
   movimentacao(dt)
   inimigo(dt)
   colisoes()
-  
+  if personagem.velY~=0 then
+	personagem.posX=personagem.posX-posY*dt
+	personagem.velY=personagem.velY-gravidade*dt
+      if personagem.posY>posY/2 then
+          personagem.velY=0
+		  personagem.posY=posY/2
+      end
+  end
+		
 
 end
 
 function love.draw()
     love.graphics.setBackgroundColor(255,255,255)
+    love.graphics.draw(imagem0,0,0)
      
     if direcao and cobreimagem  then
-        animation:draw (imagem,posX,50,0,-1,1,37,0)
+        animation:draw (imagem,posX,posY,0,-1,1,37,0)
     elseif cobreimagem and not direcao  then
-        animation:draw (imagem, posX, 50,0,1,1,37,0)
+        animation:draw (imagem, posX, posY,0,1,1,37,0)
     end
     
     if not cobreimagem and verificar   then
-         animation2:draw (imagem2, posX, 50,0,-1,1,45,0)
+         animation2:draw (imagem2, posX,posY,0,-1,1,45,0)
     
   elseif not cobreimagem and not verificar then
-        animation2:draw (imagem2, posX, 50,0,1,1,45,0)
+        animation2:draw (imagem2, posX,posY,0,1,1,45,0)
       end
         
 	for i,inimigo in ipairs(inimigos) do
@@ -80,14 +107,25 @@ function movimentacao(dt)
         animation:update(dt)
         end
 	end
-
-	if love.keyboard.isDown('s') and love.keyboard.isDown('right') then
+    tempodefuradeira=tempodefuradeira-(1*dt)
+    if tempodefuradeira<0 then
+      pode=true
+      
+    end
+    if love.keyboard.isDown(';') and love.keyboard.isDown('right') and pode then
 		posX=posX+dt
 		cobreimagem=false
 		verificar=true
 		animation2:update(dt)
+    pode=false
+    tempofuradeira=delayfuradeira
+    
+    
+    
+
+    
   end
-  if love.keyboard.isDown('s') and love.keyboard.isDown('left') then
+  if love.keyboard.isDown(';') and love.keyboard.isDown('left') then
 		posX=posX-dt
 		cobreimagem=false
 		verificar=false
@@ -101,7 +139,7 @@ tempocriarInimigo=tempocriarInimigo - (1*dt)
 		
 		tempocriarInimigo=delayInimigo
 		numAleatorio=math.random(60,70)
-		novoInimigo={ x=800 ,y=85 , imag=imagem3 }
+		novoInimigo={ x=800 ,y=430 , imag=imagem3 }
 		table.insert(inimigos, novoInimigo)
   end
 			for i,inimigo in ipairs(inimigos) do
@@ -115,11 +153,19 @@ tempocriarInimigo=tempocriarInimigo - (1*dt)
 end
 function colisoes()
 	for i,inimigo in ipairs(inimigos) do
-		if checaColisoes(inimigo.x,inimigo.y,imagem3:getWidth(),imagem3:getHeight(),posX,50,imagem2:getWidth(),imagem2:getHeight()) then
+		if checaColisoes(inimigo.x,inimigo.y,41,30,posX,435,45,96) and love.keyboard.isDown(';') and love.keyboard.isDown('left') or checaColisoes(inimigo.x,inimigo.y,41,30,posX,435,45,96) and love.keyboard.isDown(';') and love.keyboard.isDown('right') then
 		table.remove(inimigos,i)
+		
 		end
 	end
 end
 function checaColisoes(x1,y1,w1,h1,x2,y2,w2,h2)
-	return x1<x2+w2 and x1<x2+w1 and y1<y2+h2 and y1<y2+h1
+	return x1<x2+w2  and x1<x2+w1 and y1<y2+h2  and y1<y2+h1
+end
+function love.keypressed(key)
+	if key=="d" then
+		if personagem.velY==0 then
+			personagem.velY=alturaPulo
+		end
+	end
 end
