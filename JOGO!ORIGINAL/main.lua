@@ -6,8 +6,8 @@ alturaTela = love.graphics.getHeight()
 local imagem,animation
 local imagem2,animation2
 local imagem3,animation3
-local posY=395
-local posX=100
+local posY=100
+local posX=300
 local direita=true
 local cobreimagem=true
 local pode=false
@@ -15,6 +15,8 @@ local verificar=false
 local movCano=true
 local pontos=-1
 local letrasFilename="fonte/letra.ttf"
+
+
 
 function love.load()
   --score
@@ -46,7 +48,9 @@ function love.load()
 -- pontos
 vivo=true
 pontos=pontos+1
-
+--sons usados no jogo
+morte=love.audio.newSource("sons/didimorreu.mp3","static")
+barulhoaomorrer=love.audio.newSource("sons/barulhoaomorrer.mp3","static")
 
 
 end
@@ -112,7 +116,11 @@ function love.draw()
 	for i,inimigo in ipairs(inimigos) do
 		if vivo then
 			animation3:draw(imagem3,inimigo.x,inimigo.y,0,-1,1,20,0)
-		else love.graphics.print("aperte r para reviver",200,200)
+		else
+       love.graphics.print("GAME OVER!",280,100)
+     
+       love.graphics.print("aperte [r] para reviver",200,200)
+      
     end
 	end
     
@@ -162,14 +170,16 @@ tempocriarInimigo=tempocriarInimigo - (1*dt)
 		tempocriarInimigo=delayInimigo
 		numAleatorio=math.random(300,425)
 
-		novoInimigo={ x=800 ,y=numAleatorio , imag=imagem3 }
+		novoInimigo={ x=800 ,y=numAleatorio, imag=imagem3 }
 		table.insert(inimigos, novoInimigo)
   end
 			for i,inimigo in ipairs(inimigos) do
 				inimigo.x=inimigo.x-(100*dt)
       
-        if inimigo.x<20 and inimigo.x>19 or inimigo.x<20 and inimigo.x>19 and guia then
+        if inimigo.x<20 and inimigo.x>19 and vivo or inimigo.x<20 and inimigo.x>19 and guia and vivo then
           pontos=pontos+1
+        else 
+          
         end
 
 			end
@@ -177,10 +187,19 @@ tempocriarInimigo=tempocriarInimigo - (1*dt)
 end
 function colisaocano()
   for i,inimigo in ipairs(inimigos) do
-      if checaColisoes2(22,0,52,299+canoEixoy,inimigo.x,inimigo.y,41,38) or checaColisoes2(22,472+canoEixoy,52,400,inimigo.x,inimigo.y,41,38) and inimigo.x>21  then
+      if checaColisoes2(22,0,52,299+canoEixoy,inimigo.x,inimigo.y,41,38) or checaColisoes2(22,472+canoEixoy,52,400,inimigo.x,inimigo.y,41,38) and inimigo.x>21 and vivo then
           table.remove(inimigos,i)
 		  vivo=false
-      end
+      
+      morte:play()
+      barulhoaomorrer:play()
+      
+      
+      
+    
+      
+    end
+    
   end
 end
 
