@@ -46,11 +46,19 @@ function love.load()
  time=0
  delta=1
 -- pontos
-vivo=true
+
 pontos=pontos+1
+--reset and gameover
+vivo=true
 --sons usados no jogo
 morte=love.audio.newSource("sons/didimorreu.mp3","static")
 barulhoaomorrer=love.audio.newSource("sons/barulhoaomorrer.mp3","static")
+--menu
+telaDomenu=love.graphics.newImage("imagem/menu.png")
+telaInstrucoes=love.graphics.newImage("imagem/instrucoes.png")
+abreMenu=true
+abreInstrucoes=false
+semColisaoeInimigos=false
 
 
 end
@@ -70,7 +78,7 @@ for x=3,1000000,3 do
 
   elseif time>x and x%2==0 then
     delta=1
-
+    
   end
 end
 
@@ -82,7 +90,21 @@ if not vivo and love.keyboard.isDown('r') then
 	pontos=0
 	vivo=true
 end
-
+    if love.keyboard.isDown('x') and abreMenu then
+      abreMenu=false
+      abreInstrucoes=true
+    end
+    if love.keyboard.isDown('z') and abreInstrucoes then 
+      abreInstrucoes=false
+      	inimigos={}
+	tempocriarInimigo=delayInimigo
+	posX=395
+	posY=100
+	pontos=0
+	vivo=true
+  semColisaoeInimigos=true
+    end
+      
 
 
 
@@ -114,7 +136,7 @@ function love.draw()
 
 
 	for i,inimigo in ipairs(inimigos) do
-		if vivo then
+		if vivo  then
 			animation3:draw(imagem3,inimigo.x,inimigo.y,0,-1,1,20,0)
 		else
        love.graphics.print("GAME OVER!",280,100)
@@ -123,8 +145,13 @@ function love.draw()
       
     end
 	end
+    if abreMenu then
+      love.graphics.draw(telaDomenu,0,0)
+    end
+    if abreInstrucoes then
+      love.graphics.draw(telaInstrucoes,0,0)
+    end
     
-
 
 end
 function movimentacao(dt)
@@ -187,9 +214,10 @@ tempocriarInimigo=tempocriarInimigo - (1*dt)
 end
 function colisaocano()
   for i,inimigo in ipairs(inimigos) do
-      if checaColisoes2(22,0,52,299+canoEixoy,inimigo.x,inimigo.y,41,38) or checaColisoes2(22,472+canoEixoy,52,400,inimigo.x,inimigo.y,41,38) and inimigo.x>21 and vivo then
+      if checaColisoes2(22,0,52,299+canoEixoy,inimigo.x,inimigo.y,41,38) and vivo and semColisaoeInimigos or checaColisoes2(22,472+canoEixoy,52,400,inimigo.x,inimigo.y,41,38) and inimigo.x>21 and vivo and  semColisaoeInimigos then
           table.remove(inimigos,i)
 		  vivo=false
+    
       
       morte:play()
       barulhoaomorrer:play()
@@ -211,11 +239,11 @@ end
 
 function guia()
 	for i,inimigo in ipairs(inimigos) do
-		if checaColisoes(inimigo.x,41,posX,41) and posY > inimigo.y  then
+		if checaColisoes(inimigo.x,41,posX,41) and posY > inimigo.y and vivo and semColisaoeInimigos then
 
 		inimigo.y=inimigo.y+1.2
 
-  elseif checaColisoes(inimigo.x,41,posX,41) and posY < inimigo.y then
+  elseif checaColisoes(inimigo.x,41,posX,41) and posY < inimigo.y and vivo and semColisaoeInimigos  then
     inimigo.y=inimigo.y-1.2
     end
 	end
