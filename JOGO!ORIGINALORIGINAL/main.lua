@@ -117,6 +117,7 @@ end
 	vivo=true
   semColisaoeBirds=true
   menuMusic:stop()
+  timeBirds=0
     end
 
 end
