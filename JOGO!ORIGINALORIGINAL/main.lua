@@ -1,18 +1,17 @@
 
-love.window.setTitle("Help the birds")
-local anim = require 'anim8'
+love.window.setTitle("Save the birds")
+local anim = require 'anim8' 
 larguraTela = love.graphics.getWidth()
 alturaTela = love.graphics.getHeight()
-local imagem,animation
+
 local imagem2,animation2
 local imagem3,animation3
 local posY=100
 local posX=300
 local direita=true
 local cobreimagem=true
-local pode=false
+
 local verificar=false
-local movCano=true
 local pontos=-1
 local letrasFilename="fonte/letra.ttf"
 
